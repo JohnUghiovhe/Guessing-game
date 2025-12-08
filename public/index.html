@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Live Guessing Game</title>
+    <style>
+      :root {
+        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        color: #182544;
+        background: #13db98;
+      }
+      body {
+        margin: 0;
+        padding: 24px;
+        display: grid;
+        gap: 16px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      }
+      main {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 16px;
+      }
+      section {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      }
+      h1,
+      h2,
+      h3 {
+        margin: 0 0 8px;
+      }
+      form {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      input,
+      button {
+        padding: 10px 12px;
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+        font-size: 14px;
+      }
+      button {
+        background: #004b2e;
+        color: #fff;
+        cursor: pointer;
+        border: none;
+      }
+      button:disabled {
+        background: #cbd5e1;
+        cursor: not-allowed;
+      }
+      .meta {
+        font-family: 'Roboto', sans-serif;
+        color: #475569;
+        font-size: 15px;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 8px;
+      }
+      .player {
+        display: flex;
+        justify-content: space-between;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 8px 10px;
+      }
+      .tag {
+        padding: 2px 6px;
+        border-radius: 6px;
+        background: #e0f2fe;
+        color: #075985;
+        font-size: 12px;
+      }
+      .chat {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 12px;
+        background: #f8fafc;
+        height: 320px;
+        overflow-y: auto;
+        display: grid;
+        gap: 8px;
+      }
+      .bubble {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 14px;
+      }
+      .system {
+        color: #475569;
+        font-size: 13px;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .stack {
+        display: grid;
+        gap: 12px;
+      }
+    </style>
+    <script src="https://cdn.socket.io/4.8.0/socket.io.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>Live Guessing Game</h1>
+        <p class="meta">Chat-like play: join, start, post questions, answer live.</p>
+      </div>
+      <div>
+        <form id="join-form">
+          <input id="name-input" type="text" placeholder="Enter your name" required />
+          <label class="row" style="font-size: 13px; color: #0f172a">
+            <input id="master-checkbox" type="checkbox" />
+            Join as Game Master
+          </label>
+          <button type="submit">Join</button>
+        </form>
+      </div>
+    </header>
+
+    <main>
+      <section class="stack">
+        <div class="row" style="justify-content: space-between">
+          <div>
+            <h2 id="question-title">Waiting to start…</h2>
+            <p class="meta" id="timer-meta">Timer: --</p>
+          </div>
+          <button id="start-btn" type="button" disabled>Start Session</button>
+        </div>
+
+        <div id="master-tools" class="stack" style="display: none">
+          <h3>Post a Question</h3>
+          <form id="question-form">
+            <input id="question-input" type="text" placeholder="Question" required />
+            <input id="answer-input" type="text" placeholder="Answer" required />
+            <button type="submit">Send</button>
+          </form>
+        </div>
+
+        <div class="stack">
+          <h3>Chat / Feed</h3>
+          <div id="messages" class="chat"></div>
+        </div>
+
+        <div class="stack">
+          <h3>Your Answer</h3>
+          <form id="answer-form">
+            <input id="player-answer" type="text" placeholder="Type your answer" required />
+            <button id="submit-btn" type="submit" disabled>Submit Answer</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="stack">
+        <div class="row" style="justify-content: space-between">
+          <h3>Players</h3>
+          <p class="meta"><span id="player-count">0</span> connected</p>
+        </div>
+        <ul id="players"></ul>
+      </section>
+    </main>
+
+    <script>
+      const socket = io();
+      let myId = null;
+      const joinForm = document.getElementById('join-form');
+      const nameInput = document.getElementById('name-input');
+      const masterCheckbox = document.getElementById('master-checkbox');
+      const startBtn = document.getElementById('start-btn');
+      const questionForm = document.getElementById('question-form');
+      const questionInput = document.getElementById('question-input');
+      const answerInput = document.getElementById('answer-input');
+      const questionTitle = document.getElementById('question-title');
+      const answerForm = document.getElementById('answer-form');
+      const submitBtn = document.getElementById('submit-btn');
+      const playerAnswer = document.getElementById('player-answer');
+      const timerMeta = document.getElementById('timer-meta');
+      const playersList = document.getElementById('players');
+      const playerCount = document.getElementById('player-count');
+      const messagesEl = document.getElementById('messages');
+      const masterTools = document.getElementById('master-tools');
+
+      let joined = false;
+      let isMaster = false;
+      let currentQuestion = null;
+      let result = null;
+
+      socket.on('connect', () => {
+        myId = socket.id;
+      });
+
+      joinForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!nameInput.value.trim()) return;
+
+        const payload = { name: nameInput.value.trim(), isMaster: masterCheckbox.checked };
+        socket.emit('player:join', payload, (resp) => {
+          if (resp?.error) {
+            pushMessage(`Join failed: ${resp.error}`, true);
+            return;
+          }
+          joined = true;
+          isMaster = masterCheckbox.checked;
+          joinForm.querySelector('button').disabled = true;
+          nameInput.disabled = true;
+          masterCheckbox.disabled = true;
+          startBtn.disabled = !isMaster;
+          masterTools.style.display = isMaster ? 'grid' : 'none';
+          pushMessage(`You joined as ${isMaster ? 'Game Master' : 'Player'}.`, true);
+        });
+      });
+
+      startBtn.addEventListener('click', () => {
+        socket.emit('game:start', null, (resp) => {
+          if (resp?.error) pushMessage(resp.error, true);
+        });
+      });
+
+      questionForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!questionInput.value.trim() || !answerInput.value.trim()) return;
+        socket.emit(
+          'question:create',
+          { question: questionInput.value.trim(), answer: answerInput.value.trim() },
+          (resp) => {
+            if (resp?.error) {
+              pushMessage(resp.error, true);
+              return;
+            }
+            questionInput.value = '';
+            answerInput.value = '';
+          }
+        );
+      });
+
+      answerForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!currentQuestion) return;
+        if (!playerAnswer.value.trim()) return;
+        socket.emit('answer:submit', { answer: playerAnswer.value.trim() });
+        playerAnswer.value = '';
+      });
+
+      socket.on('game:state', renderState);
+      socket.on('players:update', renderPlayers);
+      socket.on('timer:update', (seconds) => {
+        timerMeta.textContent = `Timer: ${seconds}s`;
+      });
+      socket.on('answer:result', ({ correct, correctAnswer, attemptsLeft, gameOver }) => {
+        const attemptMsg = typeof attemptsLeft === 'number' ? ` Attempts left: ${attemptsLeft}.` : '';
+        const msg = correct
+          ? 'Correct! You have won.'
+          : `Wrong. ${gameOver ? '' : attemptMsg || ''}`.trim();
+        pushMessage(msg, true);
+      });
+      socket.on('system:message', (msg) => pushMessage(msg, false));
+
+      function renderState(state) {
+        currentQuestion = state.currentQuestion;
+        result = state.result;
+        playerCount.textContent = state.playerCount ?? 0;
+
+        const me = state.players?.find((p) => p.id === myId);
+        isMaster = Boolean(me?.isMaster);
+        startBtn.disabled = !isMaster || state.inProgress;
+        masterTools.style.display = isMaster ? 'grid' : 'none';
+
+        if (!state.inProgress) {
+          questionTitle.textContent = 'Waiting to start…';
+          submitBtn.disabled = true;
+          timerMeta.textContent = 'Timer: --';
+          if (result) {
+            const winnerLine = result.winnerName
+              ? `Winner: ${result.winnerName}`
+              : 'No winner.';
+            const answerLine = result.answer ? `Answer: ${result.answer}` : '';
+            pushMessage(`${winnerLine} ${answerLine}`.trim(), false);
+          }
+          return;
+        }
+
+        if (currentQuestion) {
+          questionTitle.textContent = currentQuestion.prompt;
+          submitBtn.disabled = false;
+          timerMeta.textContent = `Timer: ${state.timeLeft || '--'}s`;
+        } else {
+          questionTitle.textContent = 'Waiting for next question…';
+          submitBtn.disabled = true;
+        }
+
+        // Disable answer if attempts exhausted or game over
+        if (me && me.attemptsLeft <= 0) {
+          submitBtn.disabled = true;
+          pushMessage('No attempts left.', true);
+        }
+        if (state.result) {
+          submitBtn.disabled = true;
+        }
+      }
+
+      function renderPlayers(players = []) {
+        playerCount.textContent = players.length;
+        playersList.innerHTML = players
+          .map(
+            (p) => `
+            <li class="player">
+              <span>${p.name} ${p.isMaster ? '<span class="tag">GM</span>' : ''}</span>
+              <span>${p.score} pts • ${p.attemptsLeft ?? 0} tries</span>
+            </li>
+          `
+          )
+          .join('');
+      }
+
+      function pushMessage(text, isLocal) {
+        const entry = document.createElement('div');
+        entry.className = 'bubble';
+        entry.innerHTML = `<span class="${isLocal ? 'system' : ''}">${text}</span>`;
+        messagesEl.appendChild(entry);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+    </script>
+  </body>
+</html>
+
