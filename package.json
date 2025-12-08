@@ -1,0 +1,26 @@
+{
+  "name": "guessing-game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "start:dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JohnUghiovhe/Guessing-game.git"
+  },
+  "keywords": [],
+  "author": "John Ughiovhe",
+  "license": "ISC",
+  "homepage": "https://github.com/JohnUghiovhe/Guessing-game#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "socket.io": "^4.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
