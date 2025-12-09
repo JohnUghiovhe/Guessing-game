@@ -212,9 +212,10 @@ class GameSession {
       return;
     }
 
-    // pick the first non-master; if none, keep current or set first available
-    const candidates = Array.from(this.players.values());
-    const next = candidates.find((p) => !p.isMaster) || candidates[0];
+    const ordered = Array.from(this.players.values());
+    const currentIndex = ordered.findIndex((p) => p.id === this.masterId);
+    const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % ordered.length : 0;
+    const next = ordered[nextIndex];
     if (!next) return;
 
     // clear current
