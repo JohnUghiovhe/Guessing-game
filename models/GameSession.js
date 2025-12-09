@@ -112,7 +112,13 @@ class GameSession {
     this.result = null;
     this.broadcastState();
     this.io.emit('system:message', `Question ready: ${question}`);
-    return { ok: true };
+
+    const startResult = this.startGame(byId);
+    if (startResult?.error) {
+      return startResult;
+    }
+
+    return { ok: true, started: true };
   }
 
   handleAnswer(playerId, answer) {
