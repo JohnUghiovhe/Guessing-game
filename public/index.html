@@ -12,9 +12,9 @@
     />
     <style>
       :root {
-        --bg-a: #051126;
-        --bg-b: #102a43;
-        --bg-c: #123850;
+        --bg-a: #dceefc;
+        --bg-b: #c4d9ee;
+        --bg-c: #afc8e2;
         --panel: #f8fafc;
         --panel-strong: #ffffff;
         --text: #0b1322;
@@ -25,6 +25,54 @@
         --danger: #dc2626;
         --line: #dbe4ef;
         --ok: #16a34a;
+        --focus-ring: rgba(14, 165, 164, 0.38);
+        --hero-gradient-a: rgba(248, 250, 252, 0.96);
+        --hero-gradient-b: rgba(255, 255, 255, 0.86);
+        --panel-gradient-a: rgba(248, 250, 252, 0.98);
+        --panel-gradient-b: rgba(240, 246, 251, 0.98);
+        --surface: #ffffff;
+        --surface-soft: #f8fbff;
+        --surface-soft-alt: #f1fbf5;
+        --shadow: rgba(3, 8, 20, 0.16);
+        --checkbox-text: #223049;
+      }
+
+      :root[data-theme='dark'] {
+        --bg-a: #051126;
+        --bg-b: #102a43;
+        --bg-c: #123850;
+        --panel: #dce7f2;
+        --panel-strong: #f8fbff;
+        --text: #0b1322;
+        --muted: #4e6077;
+        --line: #cfdeee;
+        --hero-gradient-a: rgba(248, 250, 252, 0.96);
+        --hero-gradient-b: rgba(255, 255, 255, 0.86);
+        --panel-gradient-a: rgba(248, 250, 252, 0.98);
+        --panel-gradient-b: rgba(240, 246, 251, 0.98);
+        --surface: #ffffff;
+        --surface-soft: #f8fbff;
+        --surface-soft-alt: #f1fbf5;
+        --shadow: rgba(3, 8, 20, 0.28);
+      }
+
+      :root[data-theme='light'] {
+        --bg-a: #dceefc;
+        --bg-b: #c4d9ee;
+        --bg-c: #afc8e2;
+        --panel: #f8fbff;
+        --panel-strong: #ffffff;
+        --text: #0b1322;
+        --muted: #4b6078;
+        --line: #d2deec;
+        --hero-gradient-a: rgba(255, 255, 255, 0.95);
+        --hero-gradient-b: rgba(250, 252, 255, 0.92);
+        --panel-gradient-a: rgba(255, 255, 255, 0.98);
+        --panel-gradient-b: rgba(245, 250, 255, 0.98);
+        --surface: #ffffff;
+        --surface-soft: #f7faff;
+        --surface-soft-alt: #eef9f2;
+        --shadow: rgba(4, 16, 34, 0.14);
       }
 
       * {
@@ -40,6 +88,7 @@
           radial-gradient(circle at 16% 10%, rgba(245, 158, 11, 0.28), transparent 42%),
           radial-gradient(circle at 88% 18%, rgba(59, 130, 246, 0.24), transparent 34%),
           linear-gradient(130deg, var(--bg-a), var(--bg-b) 48%, var(--bg-c));
+        transition: background 0.25s ease;
       }
 
       .shell {
@@ -53,11 +102,11 @@
       .hero {
         position: relative;
         overflow: hidden;
-        background: linear-gradient(135deg, rgba(248, 250, 252, 0.96), rgba(255, 255, 255, 0.86));
+        background: linear-gradient(135deg, var(--hero-gradient-a), var(--hero-gradient-b));
         border: 1px solid rgba(255, 255, 255, 0.55);
         border-radius: 22px;
         padding: 20px;
-        box-shadow: 0 20px 55px rgba(3, 8, 20, 0.35);
+        box-shadow: 0 20px 55px var(--shadow);
         animation: fade-up 0.6s ease both;
       }
 
@@ -133,10 +182,10 @@
       }
 
       .panel {
-        background: linear-gradient(180deg, rgba(248, 250, 252, 0.98), rgba(240, 246, 251, 0.98));
+        background: linear-gradient(180deg, var(--panel-gradient-a), var(--panel-gradient-b));
         border-radius: 18px;
         border: 1px solid rgba(255, 255, 255, 0.38);
-        box-shadow: 0 14px 40px rgba(3, 8, 20, 0.28);
+        box-shadow: 0 14px 40px var(--shadow);
         padding: 16px;
         animation: fade-up 0.7s ease both;
       }
@@ -225,10 +274,10 @@
         gap: 7px;
         border: 1px solid #d4e1f0;
         border-radius: 11px;
-        background: #fff;
+        background: var(--surface);
         min-height: 42px;
         padding: 0 10px;
-        color: #223049;
+        color: var(--checkbox-text);
         font-size: 0.93rem;
         white-space: nowrap;
       }
@@ -265,7 +314,7 @@
         overflow-y: auto;
         border-radius: 12px;
         border: 1px solid #cdd9e7;
-        background: #ffffff;
+        background: var(--surface);
         padding: 10px;
         display: grid;
         gap: 8px;
@@ -275,14 +324,14 @@
         border-radius: 10px;
         border: 1px solid #dce5f2;
         padding: 8px 10px;
-        background: #f8fbff;
+        background: var(--surface-soft);
         font-size: 0.93rem;
         line-height: 1.4;
       }
 
       .message.local {
         border-color: #cde8d8;
-        background: #f1fbf5;
+        background: var(--surface-soft-alt);
       }
 
       .message .time {
@@ -308,7 +357,38 @@
         border: 1px solid #d8e4f1;
         border-radius: 12px;
         padding: 10px;
-        background: #fff;
+        background: var(--surface);
+      }
+
+      .theme-btn {
+        background: linear-gradient(135deg, #1d4ed8, #1e3a8a);
+        min-width: 132px;
+      }
+
+      :where(button, input[type='text'], input[type='checkbox']):focus-visible {
+        outline: 3px solid var(--focus-ring);
+        outline-offset: 2px;
+      }
+
+      button:focus:not(:focus-visible),
+      input:focus:not(:focus-visible) {
+        outline: none;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+
+        button:hover:not(:disabled) {
+          transform: none;
+          filter: none;
+        }
       }
 
       .player-name {
@@ -407,6 +487,9 @@
               <input id="master-checkbox" type="checkbox" />
               Join as Game Master
             </label>
+            <button id="theme-toggle" class="theme-btn" type="button" aria-label="Toggle theme">
+              Theme: Light
+            </button>
             <button type="submit">Join Session</button>
           </form>
         </div>
@@ -493,11 +576,25 @@
       const masterTools = document.getElementById('master-tools');
       const stateChip = document.getElementById('state-chip');
       const roundStatus = document.getElementById('round-status');
+      const themeToggle = document.getElementById('theme-toggle');
+      const THEME_KEY = 'guessing-game-theme';
 
       let joined = false;
       let isMaster = false;
       let currentQuestion = null;
       let lastResultSignature = '';
+
+      initializeTheme();
+
+      themeToggle.addEventListener('click', () => {
+        const nextTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(nextTheme);
+        try {
+          localStorage.setItem(THEME_KEY, nextTheme);
+        } catch (error) {
+          // Ignore storage failures and keep in-memory theme.
+        }
+      });
 
       socket.on('connect', () => {
         myId = socket.id;
@@ -681,6 +778,31 @@
           .replace(/>/g, '&gt;')
           .replace(/"/g, '&quot;')
           .replace(/'/g, '&#39;');
+      }
+
+      function initializeTheme() {
+        let preferredTheme = 'light';
+
+        try {
+          const savedTheme = localStorage.getItem(THEME_KEY);
+          if (savedTheme === 'light' || savedTheme === 'dark') {
+            preferredTheme = savedTheme;
+          } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            preferredTheme = 'dark';
+          }
+        } catch (error) {
+          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            preferredTheme = 'dark';
+          }
+        }
+
+        applyTheme(preferredTheme);
+      }
+
+      function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        themeToggle.textContent = 'Theme: ' + (theme === 'dark' ? 'Dark' : 'Light');
+        themeToggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
       }
     </script>
   </body>
