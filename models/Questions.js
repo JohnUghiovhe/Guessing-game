@@ -1,11 +1,16 @@
 class Questions {
   constructor({ question, answer }) {
-      this.question = question;
-      this.answer = answer.trim();
+    this.question = question;
+    this.answer = answer.trim();
+  }
+
+  isCorrect(guess) {
+    return this.answer.toLowerCase() === String(guess).trim().toLowerCase();
   }
 
   isAnswer(guess) {
-      return this.answer.toLowerCase() === guess.trim().toLowerCase();
+    // Backward-compatible alias for older call sites.
+    return this.isCorrect(guess);
   }
 }
 

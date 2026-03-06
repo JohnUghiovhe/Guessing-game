@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --runInBand",
+    "test:unit": "jest --runInBand tests/unit",
+    "test:integration": "jest --runInBand tests/integration",
     "dev": "nodemon index.js",
     "start": "node index.js",
     "start:dev": "nodemon index.js"
@@ -22,6 +24,8 @@
     "socket.io": "^4.8.0"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
+    "socket.io-client": "^4.8.0",
     "nodemon": "^3.1.11"
   }
 }

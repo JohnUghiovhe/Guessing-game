@@ -177,6 +177,9 @@ Use multiple tabs or devices to simulate multiple players.
 - `npm start`: Start server with Node.
 - `npm run dev`: Start server with Nodemon.
 - `npm run start:dev`: Alias for dev startup.
+- `npm test`: Run all tests (unit + integration).
+- `npm run test:unit`: Run unit tests only.
+- `npm run test:integration`: Run integration tests only.
 
 ## Project Structure
 ```text
@@ -212,11 +215,10 @@ Fix options:
 - Note: the `question:create` flow currently auto-triggers `startGame` on the server.
 
 ## Known Limitations
-- Current project has no test suite yet (`npm test` is a placeholder).
+- Test coverage currently focuses on session lifecycle; broader UI and end-to-end scenarios are still limited.
 - Frontend is single-file (`public/index.html`) and can be modularized for scale.
 
 ## Future Improvements
-1. Add automated unit/integration tests for session lifecycle.
 2. Split frontend into separate CSS/JS modules.
 3. Add persistent rooms and session history.
 4. Add authentication/identity beyond socket connection IDs.
