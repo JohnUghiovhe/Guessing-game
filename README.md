@@ -130,7 +130,10 @@ One player acts as the Game Master (GM), posts a question, and manages rounds wh
 
 ### Client
 - `public/index.html`
-  - Full UI, styling, and client-side socket orchestration in one file.
+- `public/styles.css`
+  - Extracted design system and responsive styling.
+- `public/app.js`
+  - Client-side Socket.IO logic, theme handling, and UI behavior.
 
 ## Socket Events
 
@@ -165,7 +168,9 @@ npm start
 
 ### Run (Development with auto-reload)
 ```bash
-npm run dev
+  |-- app.js
+  |-- index.html
+  `-- styles.css
 ```
 
 Open:
@@ -216,12 +221,11 @@ Fix options:
 
 ## Known Limitations
 - Test coverage currently focuses on session lifecycle; broader UI and end-to-end scenarios are still limited.
-- Frontend is single-file (`public/index.html`) and can be modularized for scale.
+- Frontend is now modularized, but still plain JS/CSS without build-time linting/bundling.
 
 ## Future Improvements
-2. Split frontend into separate CSS/JS modules.
-3. Add persistent rooms and session history.
-4. Add authentication/identity beyond socket connection IDs.
-5. Add admin controls and round configuration in UI.
+1. Add persistent rooms and session history.
+2. Add authentication/identity beyond socket connection IDs.
+3. Add admin controls and round configuration in UI.
 
 
