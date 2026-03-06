@@ -4,186 +4,472 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Live Guessing Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
-        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-        color: #182544;
-        background: #15a776;
+        --bg-a: #051126;
+        --bg-b: #102a43;
+        --bg-c: #123850;
+        --panel: #f8fafc;
+        --panel-strong: #ffffff;
+        --text: #0b1322;
+        --muted: #526176;
+        --primary: #0f766e;
+        --primary-deep: #0a4f5a;
+        --accent: #f59e0b;
+        --danger: #dc2626;
+        --line: #dbe4ef;
+        --ok: #16a34a;
       }
+
+      * {
+        box-sizing: border-box;
+      }
+
       body {
         margin: 0;
-        padding: 24px;
+        min-height: 100vh;
+        color: var(--text);
+        font-family: 'Outfit', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background:
+          radial-gradient(circle at 16% 10%, rgba(245, 158, 11, 0.28), transparent 42%),
+          radial-gradient(circle at 88% 18%, rgba(59, 130, 246, 0.24), transparent 34%),
+          linear-gradient(130deg, var(--bg-a), var(--bg-b) 48%, var(--bg-c));
+      }
+
+      .shell {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 28px 20px 40px;
         display: grid;
         gap: 16px;
       }
-      header {
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, rgba(248, 250, 252, 0.96), rgba(255, 255, 255, 0.86));
+        border: 1px solid rgba(255, 255, 255, 0.55);
+        border-radius: 22px;
+        padding: 20px;
+        box-shadow: 0 20px 55px rgba(3, 8, 20, 0.35);
+        animation: fade-up 0.6s ease both;
+      }
+
+      .hero::after {
+        content: '';
+        position: absolute;
+        right: -90px;
+        top: -90px;
+        width: 260px;
+        height: 260px;
+        background: radial-gradient(circle, rgba(15, 118, 110, 0.2), transparent 68%);
+        pointer-events: none;
+      }
+
+      .hero-row {
         display: flex;
-        align-items: center;
+        gap: 14px;
         justify-content: space-between;
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 15px;
-        padding: 16px;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        align-items: flex-start;
+        flex-wrap: wrap;
       }
-      main {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 16px;
-      }
-      section {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 15px;
-        padding: 16px;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-      }
+
       h1,
       h2,
       h3 {
-        margin: 0 0 8px;
+        margin: 0;
       }
+
+      .title {
+        font-family: 'Space Grotesk', 'Outfit', sans-serif;
+        font-size: clamp(1.55rem, 2.5vw, 2.2rem);
+        letter-spacing: 0.2px;
+      }
+
+      .subtitle {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 0.98rem;
+      }
+
+      .status-grid {
+        margin-top: 14px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(130px, 1fr));
+        gap: 10px;
+      }
+
+      .status-card {
+        background: var(--panel-strong);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 12px;
+      }
+
+      .status-label {
+        margin: 0;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: #6b7280;
+      }
+
+      .status-value {
+        margin: 4px 0 0;
+        font-weight: 700;
+        font-size: 1rem;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 2.2fr) minmax(300px, 1fr);
+        gap: 14px;
+      }
+
+      .panel {
+        background: linear-gradient(180deg, rgba(248, 250, 252, 0.98), rgba(240, 246, 251, 0.98));
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.38);
+        box-shadow: 0 14px 40px rgba(3, 8, 20, 0.28);
+        padding: 16px;
+        animation: fade-up 0.7s ease both;
+      }
+
+      .stack {
+        display: grid;
+        gap: 12px;
+      }
+
+      .card-title {
+        font-family: 'Space Grotesk', 'Outfit', sans-serif;
+        font-size: 1.1rem;
+      }
+
+      .split {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .question {
+        font-family: 'Space Grotesk', 'Outfit', sans-serif;
+        font-size: clamp(1.15rem, 1.8vw, 1.5rem);
+      }
+
+      .meta {
+        color: var(--muted);
+        margin: 0;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 0.84rem;
+        border: 1px solid transparent;
+        font-weight: 600;
+      }
+
+      .chip.waiting {
+        color: #6b4f00;
+        background: #fff7df;
+        border-color: #f4df9c;
+      }
+
+      .chip.live {
+        color: #14532d;
+        background: #e8f9ef;
+        border-color: #b9ebca;
+      }
+
       form {
         display: flex;
         gap: 8px;
         flex-wrap: wrap;
       }
-      input,
-      button {
+
+      .join-form {
+        justify-content: flex-end;
+      }
+
+      input[type='text'] {
+        flex: 1 1 180px;
+        min-height: 42px;
+        border: 1px solid #c6d4e6;
+        border-radius: 11px;
         padding: 10px 12px;
-        border-radius: 6px;
-        border: 1px solid #00290c;
-        font-size: 14px;
+        font: inherit;
+        color: var(--text);
+        background: #fff;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
       }
+
+      input[type='text']:focus {
+        outline: none;
+        border-color: #0ea5a4;
+        box-shadow: 0 0 0 3px rgba(14, 165, 164, 0.2);
+      }
+
+      .checkbox-row {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        border: 1px solid #d4e1f0;
+        border-radius: 11px;
+        background: #fff;
+        min-height: 42px;
+        padding: 0 10px;
+        color: #223049;
+        font-size: 0.93rem;
+        white-space: nowrap;
+      }
+
       button {
-        background: #004b2e;
+        border: 0;
+        border-radius: 11px;
+        min-height: 42px;
+        padding: 10px 14px;
+        font: inherit;
+        font-weight: 700;
         color: #fff;
+        background: linear-gradient(135deg, var(--primary), var(--primary-deep));
         cursor: pointer;
-        border: none;
+        transition: transform 0.12s ease, filter 0.2s ease;
       }
+
+      button:hover:not(:disabled) {
+        transform: translateY(-1px);
+        filter: brightness(1.05);
+      }
+
       button:disabled {
-        background: #cbd5e1;
         cursor: not-allowed;
+        background: #9ba8bb;
       }
-      .meta {
-        font-family: 'Roboto', sans-serif;
-        color: #475569;
-        font-size: 15px;
+
+      .alt-btn {
+        background: linear-gradient(135deg, #d97706, #b45309);
       }
-      ul {
+
+      .feed {
+        height: 340px;
+        overflow-y: auto;
+        border-radius: 12px;
+        border: 1px solid #cdd9e7;
+        background: #ffffff;
+        padding: 10px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .message {
+        border-radius: 10px;
+        border: 1px solid #dce5f2;
+        padding: 8px 10px;
+        background: #f8fbff;
+        font-size: 0.93rem;
+        line-height: 1.4;
+      }
+
+      .message.local {
+        border-color: #cde8d8;
+        background: #f1fbf5;
+      }
+
+      .message .time {
+        display: block;
+        color: #6b7280;
+        font-size: 0.73rem;
+        margin-top: 3px;
+      }
+
+      .players {
         list-style: none;
         padding: 0;
         margin: 0;
         display: grid;
         gap: 8px;
       }
+
       .player {
-        display: flex;
-        justify-content: space-between;
-        border: 1px solid #e2e8f0;
-        border-radius: 6px;
-        padding: 8px 10px;
-      }
-      .tag {
-        padding: 2px 6px;
-        border-radius: 6px;
-        background: #e0f2fe;
-        color: #4c0785;
-        font-size: 12px;
-      }
-      .chat {
-        border: 1px solid #bbe0d2;
-        border-radius: 8px;
-        padding: 12px;
-        background: #f8fafc;
-        height: 320px;
-        overflow-y: auto;
         display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
         gap: 8px;
-      }
-      .bubble {
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 8px 10px;
-        font-size: 14px;
-      }
-      .system {
-        color: #475569;
-        font-size: 13px;
-      }
-      .row {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
         align-items: center;
+        border: 1px solid #d8e4f1;
+        border-radius: 12px;
+        padding: 10px;
+        background: #fff;
       }
-      .stack {
-        display: grid;
-        gap: 12px;
+
+      .player-name {
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .tag {
+        font-size: 0.7rem;
+        border-radius: 999px;
+        color: #6c2f00;
+        background: #ffedd5;
+        border: 1px solid #fdba74;
+        padding: 2px 7px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+      }
+
+      .score {
+        color: #334155;
+        font-size: 0.9rem;
+        text-align: right;
+      }
+
+      .empty {
+        color: #64748b;
+        font-size: 0.92rem;
+        padding: 6px 2px;
+      }
+
+      @keyframes fade-up {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 980px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .join-form {
+          width: 100%;
+          justify-content: flex-start;
+        }
+
+        .status-grid {
+          grid-template-columns: repeat(2, minmax(130px, 1fr));
+        }
+      }
+
+      @media (max-width: 560px) {
+        .shell {
+          padding: 14px 12px 26px;
+          gap: 12px;
+        }
+
+        .hero,
+        .panel {
+          border-radius: 14px;
+          padding: 12px;
+        }
+
+        .status-grid {
+          grid-template-columns: 1fr;
+        }
+
+        input[type='text'],
+        button,
+        .checkbox-row {
+          width: 100%;
+        }
       }
     </style>
     <script src="https://cdn.socket.io/4.8.0/socket.io.min.js"></script>
   </head>
   <body>
-    <header>
-      <div>
-        <h1>Live Guessing Game</h1>
-        <p class="meta">Join friends, start by posting questions, answer live.</p>
-      </div>
-      <div>
-        <form id="join-form">
-          <input id="name-input" type="text" placeholder="Enter your name" required />
-          <label class="row" style="font-size: 13px; color: #0f172a">
-            <input id="master-checkbox" type="checkbox" />
-            Join as Game Master
-          </label>
-          <button type="submit">Join</button>
-        </form>
-      </div>
-    </header>
-
-    <main>
-      <section class="stack">
-        <div class="row" style="justify-content: space-between">
+    <div class="shell">
+      <header class="hero">
+        <div class="hero-row">
           <div>
-            <h2 id="question-title">Waiting to start…</h2>
-            <p class="meta" id="timer-meta">Timer: --</p>
+            <h1 class="title">Guessing Arena</h1>
+            <p class="subtitle">Create rounds, race the timer, and beat your friends live.</p>
           </div>
-          <button id="start-btn" type="button" disabled>Start Session</button>
-        </div>
 
-        <div id="master-tools" class="stack" style="display: none">
-          <h3>Post a Question</h3>
-          <form id="question-form">
-            <input id="question-input" type="text" placeholder="Question" required />
-            <input id="answer-input" type="text" placeholder="Answer" required />
-            <button type="submit">Send</button>
+          <form id="join-form" class="join-form">
+            <input id="name-input" type="text" placeholder="Enter your name" required />
+            <label class="checkbox-row">
+              <input id="master-checkbox" type="checkbox" />
+              Join as Game Master
+            </label>
+            <button type="submit">Join Session</button>
           </form>
         </div>
 
-        <div class="stack">
-          <h3>Chat / Feed</h3>
-          <div id="messages" class="chat"></div>
+        <div class="status-grid">
+          <div class="status-card">
+            <p class="status-label">Round Status</p>
+            <p class="status-value" id="round-status">Waiting</p>
+          </div>
+          <div class="status-card">
+            <p class="status-label">Timer</p>
+            <p class="status-value" id="timer-meta">--</p>
+          </div>
+          <div class="status-card">
+            <p class="status-label">Players Online</p>
+            <p class="status-value"><span id="player-count">0</span></p>
+          </div>
         </div>
+      </header>
 
-        <div class="stack">
-          <h3>Your Answer</h3>
-          <form id="answer-form">
-            <input id="player-answer" type="text" placeholder="Type your answer" required />
-            <button id="submit-btn" type="submit" disabled>Submit Answer</button>
-          </form>
-        </div>
-      </section>
+      <main class="layout">
+        <section class="panel stack">
+          <div class="split">
+            <div class="stack" style="gap: 6px">
+              <span class="chip waiting" id="state-chip">Session idle</span>
+              <h2 class="question" id="question-title">Waiting to start...</h2>
+              <p class="meta">Answer quickly before your attempts run out.</p>
+            </div>
+            <button id="start-btn" type="button" class="alt-btn" disabled>Start Session</button>
+          </div>
 
-      <section class="stack">
-        <div class="row" style="justify-content: space-between">
-          <h3>Players</h3>
-          <p class="meta"><span id="player-count">0</span> connected</p>
-        </div>
-        <ul id="players"></ul>
-      </section>
-    </main>
+          <div id="master-tools" class="stack" style="display: none">
+            <h3 class="card-title">Game Master Controls</h3>
+            <form id="question-form">
+              <input id="question-input" type="text" placeholder="Type a question prompt" required />
+              <input id="answer-input" type="text" placeholder="Correct answer" required />
+              <button type="submit">Post Question</button>
+            </form>
+          </div>
+
+          <div class="stack">
+            <h3 class="card-title">Live Feed</h3>
+            <div id="messages" class="feed" aria-live="polite"></div>
+          </div>
+
+          <div class="stack">
+            <h3 class="card-title">Submit Your Answer</h3>
+            <form id="answer-form">
+              <input id="player-answer" type="text" placeholder="Enter your guess" required />
+              <button id="submit-btn" type="submit" disabled>Send Answer</button>
+            </form>
+          </div>
+        </section>
+
+        <aside class="panel stack">
+          <div class="split">
+            <h3 class="card-title">Players</h3>
+            <p class="meta"><span id="players-online">0</span> connected</p>
+          </div>
+          <ul id="players" class="players"></ul>
+        </aside>
+      </main>
+    </div>
 
     <script>
       const socket = io();
@@ -202,13 +488,16 @@
       const timerMeta = document.getElementById('timer-meta');
       const playersList = document.getElementById('players');
       const playerCount = document.getElementById('player-count');
+      const playersOnline = document.getElementById('players-online');
       const messagesEl = document.getElementById('messages');
       const masterTools = document.getElementById('master-tools');
+      const stateChip = document.getElementById('state-chip');
+      const roundStatus = document.getElementById('round-status');
 
       let joined = false;
       let isMaster = false;
       let currentQuestion = null;
-      let result = null;
+      let lastResultSignature = '';
 
       socket.on('connect', () => {
         myId = socket.id;
@@ -220,10 +509,11 @@
 
         const payload = { name: nameInput.value.trim(), isMaster: masterCheckbox.checked };
         socket.emit('player:join', payload, (resp) => {
-          if (resp?.error) {
-            pushMessage(`Join failed: ${resp.error}`, true);
+          if (resp && resp.error) {
+            pushMessage('Join failed: ' + resp.error, true);
             return;
           }
+
           joined = true;
           isMaster = masterCheckbox.checked;
           joinForm.querySelector('button').disabled = true;
@@ -231,13 +521,13 @@
           masterCheckbox.disabled = true;
           startBtn.disabled = !isMaster;
           masterTools.style.display = isMaster ? 'grid' : 'none';
-          pushMessage(`You joined as ${isMaster ? 'Game Master' : 'Player'}.`, true);
+          pushMessage('You joined as ' + (isMaster ? 'Game Master.' : 'Player.'), true);
         });
       });
 
       startBtn.addEventListener('click', () => {
         socket.emit('game:start', null, (resp) => {
-          if (resp?.error) pushMessage(resp.error, true);
+          if (resp && resp.error) pushMessage(resp.error, true);
         });
       });
 
@@ -248,7 +538,7 @@
           'question:create',
           { question: questionInput.value.trim(), answer: answerInput.value.trim() },
           (resp) => {
-            if (resp?.error) {
+            if (resp && resp.error) {
               pushMessage(resp.error, true);
               return;
             }
@@ -269,80 +559,128 @@
       socket.on('game:state', renderState);
       socket.on('players:update', renderPlayers);
       socket.on('timer:update', (seconds) => {
-        timerMeta.textContent = `Timer: ${seconds}s`;
+        timerMeta.textContent = seconds + 's';
       });
-      socket.on('answer:result', ({ correct, correctAnswer, attemptsLeft, gameOver }) => {
-        const attemptMsg = typeof attemptsLeft === 'number' ? ` Attempts left: ${attemptsLeft}.` : '';
-        const msg = correct
-          ? 'Correct! You have won.'
-          : `Wrong. ${gameOver ? '' : attemptMsg || ''}`.trim();
-        pushMessage(msg, true);
+      socket.on('answer:result', ({ correct, attemptsLeft, gameOver }) => {
+        const attemptMsg = typeof attemptsLeft === 'number' ? ' Attempts left: ' + attemptsLeft + '.' : '';
+        const msg = correct ? 'Correct! You have won.' : ('Wrong.' + (gameOver ? '' : attemptMsg));
+        pushMessage(msg.trim(), true);
       });
       socket.on('system:message', (msg) => pushMessage(msg, false));
 
       function renderState(state) {
         currentQuestion = state.currentQuestion;
-        result = state.result;
-        playerCount.textContent = state.playerCount ?? 0;
 
-        const me = state.players?.find((p) => p.id === myId);
-        isMaster = Boolean(me?.isMaster);
+        const currentCount = state.playerCount || 0;
+        playerCount.textContent = String(currentCount);
+        playersOnline.textContent = String(currentCount);
+
+        const me = state.players && state.players.find((p) => p.id === myId);
+        isMaster = Boolean(me && me.isMaster);
         startBtn.disabled = !isMaster || state.inProgress;
         masterTools.style.display = isMaster ? 'grid' : 'none';
 
         if (!state.inProgress) {
-          questionTitle.textContent = 'Waiting to start…';
+          questionTitle.textContent = 'Waiting to start...';
           submitBtn.disabled = true;
-          timerMeta.textContent = 'Timer: --';
-          if (result) {
-            const winnerLine = result.winnerName
-              ? `Winner: ${result.winnerName}`
-              : 'No winner.';
-            const answerLine = result.answer ? `Answer: ${result.answer}` : '';
-            pushMessage(`${winnerLine} ${answerLine}`.trim(), false);
+          timerMeta.textContent = '--';
+          setStateVisual(false);
+
+          if (state.result) {
+            const winnerLine = state.result.winnerName ? 'Winner: ' + state.result.winnerName : 'No winner.';
+            const answerLine = state.result.answer ? ' Answer: ' + state.result.answer : '';
+            const signature = winnerLine + answerLine;
+            if (signature !== lastResultSignature) {
+              pushMessage((winnerLine + answerLine).trim(), false);
+              lastResultSignature = signature;
+            }
           }
           return;
         }
 
+        setStateVisual(true);
+        lastResultSignature = '';
+
         if (currentQuestion) {
           questionTitle.textContent = currentQuestion.prompt;
-          submitBtn.disabled = false;
-          timerMeta.textContent = `Timer: ${state.timeLeft || '--'}s`;
+          submitBtn.disabled = !joined;
+          timerMeta.textContent = (state.timeLeft || '--') + 's';
         } else {
-          questionTitle.textContent = 'Waiting for next question…';
+          questionTitle.textContent = 'Waiting for next question...';
           submitBtn.disabled = true;
         }
 
-        // Disable answer if attempts exhausted or game over
         if (me && me.attemptsLeft <= 0) {
           submitBtn.disabled = true;
           pushMessage('No attempts left.', true);
         }
+
         if (state.result) {
           submitBtn.disabled = true;
         }
       }
 
       function renderPlayers(players = []) {
-        playerCount.textContent = players.length;
+        playerCount.textContent = String(players.length);
+        playersOnline.textContent = String(players.length);
+
+        if (!players.length) {
+          playersList.innerHTML = '<li class="empty">No players yet. Join to begin the action.</li>';
+          return;
+        }
+
         playersList.innerHTML = players
-          .map(
-            (p) => `
-            <li class="player">
-              <span>${p.name} ${p.isMaster ? '<span class="tag">GM</span>' : ''}</span>
-              <span>${p.score} pts • ${p.attemptsLeft ?? 0} tries</span>
-            </li>
-          `
-          )
+          .map((p) => {
+            const safeName = escapeHtml(p.name || 'Player');
+            const gmTag = p.isMaster ? '<span class="tag">GM</span>' : '';
+            const score = (p.score || 0) + ' pts | ' + (p.attemptsLeft || 0) + ' tries';
+
+            return (
+              '<li class="player">' +
+              '<span class="player-name">' +
+              safeName +
+              ' ' +
+              gmTag +
+              '</span>' +
+              '<span class="score">' +
+              escapeHtml(score) +
+              '</span>' +
+              '</li>'
+            );
+          })
           .join('');
       }
 
+      function setStateVisual(inProgress) {
+        stateChip.className = 'chip ' + (inProgress ? 'live' : 'waiting');
+        stateChip.textContent = inProgress ? 'Round live' : 'Session idle';
+        roundStatus.textContent = inProgress ? 'In Progress' : 'Waiting';
+      }
+
       function pushMessage(text, isLocal) {
-        const entry = document.createElement('div');
-        entry.className = 'bubble';
-        entry.innerHTML = `<span class="${isLocal ? 'system' : ''}">${text}</span>`;
+        const entry = document.createElement('article');
+        entry.className = 'message' + (isLocal ? ' local' : '');
+
+        const content = document.createElement('span');
+        content.textContent = String(text);
+
+        const time = document.createElement('span');
+        time.className = 'time';
+        time.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        entry.appendChild(content);
+        entry.appendChild(time);
         messagesEl.appendChild(entry);
         messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
       }
     </script>
   </body>
