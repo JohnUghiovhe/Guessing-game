@@ -5,6 +5,7 @@
   --panel: #f8fafc;
   --panel-strong: #ffffff;
   --text: #0b1322;
+  --text-soft: #334155;
   --muted: #526176;
   --primary: #0f766e;
   --primary-deep: #0a4f5a;
@@ -22,25 +23,47 @@
   --surface-soft-alt: #f1fbf5;
   --shadow: rgba(3, 8, 20, 0.16);
   --checkbox-text: #223049;
+  --status-label: #6b7280;
+  --disabled-bg: #9ba8bb;
+  --input-border: #c6d4e6;
+  --input-bg: #ffffff;
+  --feed-border: #cdd9e7;
+  --message-border: #dce5f2;
+  --message-local-border: #cde8d8;
+  --tag-text: #6c2f00;
+  --tag-bg: #ffedd5;
+  --tag-border: #fdba74;
 }
 
 :root[data-theme='dark'] {
-  --bg-a: #051126;
-  --bg-b: #102a43;
-  --bg-c: #123850;
-  --panel: #dce7f2;
-  --panel-strong: #f8fbff;
-  --text: #0b1322;
-  --muted: #4e6077;
-  --line: #cfdeee;
-  --hero-gradient-a: rgba(248, 250, 252, 0.96);
-  --hero-gradient-b: rgba(255, 255, 255, 0.86);
-  --panel-gradient-a: rgba(248, 250, 252, 0.98);
-  --panel-gradient-b: rgba(240, 246, 251, 0.98);
-  --surface: #ffffff;
-  --surface-soft: #f8fbff;
-  --surface-soft-alt: #f1fbf5;
-  --shadow: rgba(3, 8, 20, 0.28);
+  --bg-a: #050b18;
+  --bg-b: #0b1a2f;
+  --bg-c: #132844;
+  --panel: #0f1b2d;
+  --panel-strong: #16243a;
+  --text: #e5eefc;
+  --text-soft: #c8d5ea;
+  --muted: #9eb1cd;
+  --line: #2a3e5d;
+  --hero-gradient-a: rgba(14, 25, 41, 0.94);
+  --hero-gradient-b: rgba(11, 20, 33, 0.92);
+  --panel-gradient-a: rgba(16, 28, 46, 0.98);
+  --panel-gradient-b: rgba(12, 21, 35, 0.98);
+  --surface: #122238;
+  --surface-soft: #1a2c45;
+  --surface-soft-alt: #16333a;
+  --shadow: rgba(0, 0, 0, 0.46);
+  --checkbox-text: #d9e5fb;
+  --status-label: #9fb0c7;
+  --disabled-bg: #465a77;
+  --input-border: #335173;
+  --input-bg: #101f33;
+  --feed-border: #2a415f;
+  --message-border: #35506f;
+  --message-local-border: #2f5d54;
+  --tag-text: #ffd7a2;
+  --tag-bg: #40240e;
+  --tag-border: #8b4a18;
 }
 
 :root[data-theme='light'] {
@@ -172,7 +195,7 @@ body {
   position: relative;
   overflow: hidden;
   background: linear-gradient(135deg, var(--hero-gradient-a), var(--hero-gradient-b));
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--line);
   border-radius: 22px;
   padding: 20px;
   box-shadow: 0 20px 55px var(--shadow);
@@ -235,7 +258,7 @@ h3 {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.09em;
-  color: #6b7280;
+  color: var(--status-label);
 }
 
 .status-value {
@@ -253,7 +276,7 @@ h3 {
 .panel {
   background: linear-gradient(180deg, var(--panel-gradient-a), var(--panel-gradient-b));
   border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.38);
+  border: 1px solid var(--line);
   box-shadow: 0 14px 40px var(--shadow);
   padding: 16px;
   animation: fade-up 0.7s ease both;
@@ -322,12 +345,12 @@ form {
 input[type='text'] {
   flex: 1 1 180px;
   min-height: 42px;
-  border: 1px solid #c6d4e6;
+  border: 1px solid var(--input-border);
   border-radius: 11px;
   padding: 10px 12px;
   font: inherit;
   color: var(--text);
-  background: #fff;
+  background: var(--input-bg);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -341,7 +364,7 @@ input[type='text']:focus {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  border: 1px solid #d4e1f0;
+  border: 1px solid var(--line);
   border-radius: 11px;
   background: var(--surface);
   min-height: 42px;
@@ -371,7 +394,7 @@ button:hover:not(:disabled) {
 
 button:disabled {
   cursor: not-allowed;
-  background: #9ba8bb;
+  background: var(--disabled-bg);
 }
 
 .alt-btn {
@@ -382,7 +405,7 @@ button:disabled {
   height: 340px;
   overflow-y: auto;
   border-radius: 12px;
-  border: 1px solid #cdd9e7;
+  border: 1px solid var(--feed-border);
   background: var(--surface);
   padding: 10px;
   display: grid;
@@ -391,7 +414,7 @@ button:disabled {
 
 .message {
   border-radius: 10px;
-  border: 1px solid #dce5f2;
+  border: 1px solid var(--message-border);
   padding: 8px 10px;
   background: var(--surface-soft);
   font-size: 0.93rem;
@@ -399,13 +422,13 @@ button:disabled {
 }
 
 .message.local {
-  border-color: #cde8d8;
+  border-color: var(--message-local-border);
   background: var(--surface-soft-alt);
 }
 
 .message .time {
   display: block;
-  color: #6b7280;
+  color: var(--muted);
   font-size: 0.73rem;
   margin-top: 3px;
 }
@@ -423,7 +446,7 @@ button:disabled {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 8px;
   align-items: center;
-  border: 1px solid #d8e4f1;
+  border: 1px solid var(--line);
   border-radius: 12px;
   padding: 10px;
   background: var(--surface);
@@ -474,22 +497,22 @@ input:focus:not(:focus-visible) {
 .tag {
   font-size: 0.7rem;
   border-radius: 999px;
-  color: #6c2f00;
-  background: #ffedd5;
-  border: 1px solid #fdba74;
+  color: var(--tag-text);
+  background: var(--tag-bg);
+  border: 1px solid var(--tag-border);
   padding: 2px 7px;
   font-weight: 700;
   letter-spacing: 0.05em;
 }
 
 .score {
-  color: #334155;
+  color: var(--text-soft);
   font-size: 0.9rem;
   text-align: right;
 }
 
 .empty {
-  color: #64748b;
+  color: var(--muted);
   font-size: 0.92rem;
   padding: 6px 2px;
 }
