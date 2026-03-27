@@ -7,9 +7,9 @@
     "test": "jest --runInBand",
     "test:unit": "jest --runInBand tests/unit",
     "test:integration": "jest --runInBand tests/integration",
-    "dev": "nodemon index.js",
-    "start": "node index.js",
-    "start:dev": "nodemon index.js"
+    "dev": "node init && nodemon index.js",
+    "start": "node init && node index.js",
+    "start:dev": "node init && nodemon index.js"
   },
   "repository": {
     "type": "git",
